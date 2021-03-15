@@ -8,7 +8,7 @@ const InputForm = (props) => {
     
     //state for input form
     const [isPasswordVisible,setIsPasswordVisible] = useState(true)
-
+    
 
     return (
         <View style={styles.inputForm}>
@@ -19,6 +19,9 @@ const InputForm = (props) => {
                 iconName="mail"
                 value={props.values.email}
                 onChangeText={props.onChangeEmail}
+                returnKeyType={"next"}
+                reference={props.emailRef}
+                onSubmitEditing={props.onSubmitEmail}
            />
            {/* custom input containing icon  */}
            <IconBasedInput
@@ -28,6 +31,8 @@ const InputForm = (props) => {
                 value={props.values.password}
                 onChangeText={props.onChangePassword}
                 secureTextEntry={isPasswordVisible}
+                reference={props.passRef}
+                onSubmitEditing={props.onSignin}
            >
                {/* icon for showing and hiding password */}
                <TouchableOpacity onPress={() => setIsPasswordVisible(prevState => !prevState )}>
@@ -47,7 +52,8 @@ const styles = StyleSheet.create({
     inputForm : {
         alignItems : 'center',
         justifyContent : 'space-around',
-        marginVertical : 10
+        marginVertical : 10,
+        marginHorizontal : 25
     },
     emailInput : {
         width : '85%',
@@ -56,7 +62,6 @@ const styles = StyleSheet.create({
         borderWidth : 1,
         borderColor : Colors.outline,
         flexDirection : 'row',
-        
         alignItems : 'center' 
     },
     icon : {

@@ -1,4 +1,5 @@
-import React , {useState} from 'react'
+import React , { useRef , useState} from 'react'
+import { useDispatch } from 'react-redux'
 import { Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import Text from '../../components/Text'
 import Dimensions from '../../constants/Dimensions'
@@ -6,12 +7,32 @@ import Colors from '../../constants/Colors'
 import InputForm from '../../components/InputForm'
 import CustomButton from '../../components/CustomButton'
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import { signin } from '../../store/actions/authActions'
 
 const SigninScreen = (props) => {
 
     const [email,setEmail] = useState();
     const [password,setPassword] = useState();
+
+    const dispatch = useDispatch()
+
+    const emailReference = useRef()
+    const passReference = useRef()
+
     
+    const focusPass = () => {
+        passReference.current.focus()
+    } 
+
+    const signinHandler = async () => {
+        try{
+            await dispatch(signin(email,password))
+            
+        }catch(err){
+            console.log(err)
+        }
+        
+    }
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
             
@@ -26,17 +47,23 @@ const SigninScreen = (props) => {
                     
                     <InputForm 
                         values={{ email , password }} 
+                        emailRef={emailReference}
+                        passRef={passReference}
+                        onSubmitEmail={focusPass}
                         onChangeEmail={(term) => setEmail(term)} 
                         onChangePassword = {(term) => setPassword(term)}
+                        onSignin={signinHandler}
                     />
                     
-                    <TouchableOpacity style={styles.forgotPassContainer}>
+                    <TouchableOpacity style={styles.forgotPassContainer} onPress={() => {
+                        props.navigation.navigate('PasswordRecovery')
+                    }}>
                         <Text style={styles.forgotPassText}>Forgot Password?</Text>
                     </TouchableOpacity>
 
                     <View style={styles.buttonsContainer}>
 
-                        <CustomButton style={styles.loginButton}>
+                        <CustomButton style={styles.loginButton} onPress={signinHandler} >
                             <Text style={styles.loginButtonTitle}>Login</Text>
                         </CustomButton>
 

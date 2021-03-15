@@ -1,4 +1,5 @@
-import React , { useState } from 'react'
+import React , { useRef,useState } from 'react'
+import {useDispatch} from 'react-redux'
 import { KeyboardAvoidingView,Keyboard , ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import Text from '../../components/Text'
 import Dimensions from '../../constants/Dimensions'
@@ -6,11 +7,17 @@ import Colors from '../../constants/Colors'
 import InputForm from '../../components/InputForm'
 import CustomButton from '../../components/CustomButton'
 import Feather from 'react-native-vector-icons/Feather'
+import { signup } from '../../store/actions/authActions'
 
 const SignupScreen = (props) => {
 
     const [email,setEmail] = useState();
     const [password,setPassword] = useState();
+
+    const emailReference = useRef()
+    const passReference = useRef()
+
+    const dispatch = useDispatch()
 
     // state for checking if password is having 6 chars and password contains a number 
     const [isAtleastSixChar,setIsAtleastSixChar] = useState(false)
@@ -57,6 +64,22 @@ const SignupScreen = (props) => {
         }
     }
 
+    const signupHandler = async () => {
+        try{
+            await dispatch(signup(email,password))
+        }catch(err){
+            console.log(err)
+        }
+        props.navigation.navigate('Verification',{
+            passRecovery : false
+        })
+        
+    }
+
+    const focusPass = () => {
+        passReference.current.focus()
+    } 
+
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
             <KeyboardAvoidingView style={styles.screen}>
@@ -69,6 +92,9 @@ const SignupScreen = (props) => {
                                 
                     <InputForm 
                         values={{ email , password }} 
+                        emailRef={emailReference}
+                        passRef={passReference}
+                        onSubmitEmail={focusPass}
                         onChangeEmail={(term) => setEmail(term)} 
                         onChangePassword = {passwordChangeHandler}
                     />  
@@ -92,7 +118,7 @@ const SignupScreen = (props) => {
                     </View>
 
                    <View style={styles.buttonContainer}>
-                        <CustomButton style={styles.signupButton}>
+                        <CustomButton style={styles.signupButton} onPress={signupHandler}>
                             <Text style={styles.signupButtonTitle}>Sign Up</Text>
                         </CustomButton>
                    </View>
